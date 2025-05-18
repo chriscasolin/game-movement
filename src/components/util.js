@@ -24,7 +24,7 @@ export class direction {
   }
 }
 
-export const INIITIAL_DIRECTION = direction.N
+export const INITIAL_DIRECTION = direction.N
 
 export const directionArrow = (d) => {
   switch (d) {

@@ -1,6 +1,6 @@
 import Tile from "./Tile";
 import '../css/Map.css';
-import { direction, directionArrow, TILE_SIZE, WINDOW_SIZE } from "./util";
+import { directionArrow, TILE_SIZE, WINDOW_SIZE } from "./util";
 import styled from "styled-components";
 
 const PlayerOverlay = styled.div`

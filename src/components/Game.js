@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import MapWindow from "./MapWindow";
-import { direction, INIITIAL_DIRECTION } from "./util";
-import Map from "./Map";
+import { direction, INITIAL_DIRECTION } from "./util";
 
 const INITIAL_DELAY = 80; // Delay before first movement repeat
 const MOVE_INTERVAL = 100;  // Interval between repeated movements
+const MOVE_AMOUNT = 1;
 const UP_KEYS = new Set(['ArrowUp', 'w'])
 const DOWN_KEYS = new Set(['ArrowDown', 's'])
 const LEFT_KEYS = new Set(['ArrowLeft', 'a'])
@@ -16,7 +16,7 @@ const Game = () => {
   const positionRef = useRef(position)
   const [map, setMap] = useState(null);
   const mapRef = useRef(map)
-  const [facing, setFacing] = useState(INIITIAL_DIRECTION)
+  const [facing, setFacing] = useState(INITIAL_DIRECTION)
 
   const [momentum, setMomentum] = useState({ dx: 0, dy: 0 });
   const momentumRef = useRef(momentum);
@@ -26,6 +26,7 @@ const Game = () => {
   useEffect(() => {
     momentumRef.current = momentum
   }, [momentum])
+
   useEffect(() => {
     positionRef.current = position
   }, [position])
@@ -33,22 +34,11 @@ const Game = () => {
   const heldKeys = useRef(new Set())
 
   const getDelta = (event, sign) => {
-    switch (event.key) {
-      case "w":
-      case "ArrowUp":
-        return { dx: 0, dy: -sign };
-      case "s":
-      case "ArrowDown":
-        return { dx: 0, dy: sign };
-      case "a":
-      case "ArrowLeft":
-        return { dx: -sign, dy: 0 };
-      case "d":
-      case "ArrowRight":
-        return { dx: sign, dy: 0 };
-      default:
-        return null;
-    }
+    if (UP_KEYS.has(event.key)) return { dx: 0, dy: -sign * MOVE_AMOUNT };
+    if (DOWN_KEYS.has(event.key)) return { dx: 0, dy: sign * MOVE_AMOUNT };
+    if (LEFT_KEYS.has(event.key)) return { dx: -sign * MOVE_AMOUNT, dy: 0 };
+    if (RIGHT_KEYS.has(event.key)) return { dx: sign * MOVE_AMOUNT, dy: 0 };
+    return null;
   };
 
   const applyMovement = (delta) => {
@@ -69,18 +59,23 @@ const Game = () => {
   };
 
   const calculateMomentum = () => {
-    let newMomentum = { dx: 0, dy: 0 }
-    if (heldKeys.current.intersection(UP_KEYS).size > 0) newMomentum.dy -= 1
-    if (heldKeys.current.intersection(DOWN_KEYS).size > 0) newMomentum.dy += 1
-    if (heldKeys.current.intersection(LEFT_KEYS).size > 0) newMomentum.dx -= 1
-    if (heldKeys.current.intersection(RIGHT_KEYS).size > 0) newMomentum.dx += 1
+    const keys = heldKeys.current;
+    let dx = 0, dy = 0;
+    if ([...UP_KEYS].some(k => keys.has(k))) dy -= 1;
+    if ([...DOWN_KEYS].some(k => keys.has(k))) dy += 1;
+    if ([...LEFT_KEYS].some(k => keys.has(k))) dx -= 1;
+    if ([...RIGHT_KEYS].some(k => keys.has(k))) dx += 1;
     // console.log(newMomentum)
-    return newMomentum
+    return {dx, dy}
   }
 
+  // TODO: This does not actually do anything. Momentum ref does not relfect
+  // the diagonal movement so it never gets scaled.
   const calcDelay = () => {
     const is_diagonal = (m) => (m.dx && m.dy)
-    return is_diagonal(momentumRef.current) ? MOVE_INTERVAL * 1.44 : MOVE_INTERVAL
+    const delay = is_diagonal(momentumRef.current) ? MOVE_INTERVAL * 1.44 : MOVE_INTERVAL
+    // console.log("DELAY", delay)
+    return delay
   }
 
   const applyMomentum = () => {
@@ -94,12 +89,14 @@ const Game = () => {
 
     clearTimeout(movementDelayTimeout.current)
     movementDelayTimeout.current = setTimeout(() => {
-      setMomentum(calculateMomentum())
-      clearInterval(movementInterval.current);
-      movementInterval.current = setInterval(() => {
-        // applyMovement(momentumRef.current)
-        applyMomentum()
-      }, calcDelay());
+      if (heldKeys.current.has(event.key)) {
+        setMomentum(calculateMomentum())
+        clearInterval(movementInterval.current);
+        movementInterval.current = setInterval(() => {
+          // applyMovement(momentumRef.current)
+          applyMomentum()
+        }, calcDelay());
+      }
     }, INITIAL_DELAY);
   }
 
@@ -138,7 +135,7 @@ const Game = () => {
 
   useEffect(() => {
     if (!map) {
-      fetch('/demoMap.json')
+      fetch('/worlds/demoMap.json')
         .then(res => res.json())
         .then(data => {
           setMap(data)
@@ -152,7 +149,6 @@ const Game = () => {
   return (
     <>
       <MapWindow map={map} playerPos={position} facing={facing} momentum={momentum} />
-      {/* <Map map={map} playerPos={position} /> */}
     </>
   );
 };
