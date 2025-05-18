@@ -135,7 +135,7 @@ const Game = () => {
 
   useEffect(() => {
     if (!map) {
-      fetch('/worlds/demoMap.json')
+      fetch('/worlds/large.json')
         .then(res => res.json())
         .then(data => {
           setMap(data)

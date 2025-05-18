@@ -16,13 +16,6 @@ const PlayerOverlay = styled.div`
   border-radius: 10px;
 `
 
-const StyledTile = styled.div.attrs(({ $x, $y }) => ({
-  style: {
-    left: `${$x * TILE_SIZE}px`,
-    top: `${$y * TILE_SIZE}px`,
-  },
-}))
-
 const MapContent = styled.div.attrs(({ $offsetX, $offsetY }) => ({
   style: {
     transform: `translate(${(-$offsetX + Math.floor(WINDOW_SIZE / 2)) * TILE_SIZE}px,
@@ -53,6 +46,21 @@ const MapWindow = ({ map, playerPos, facing }) => {
   const offsetX = playerPos.x;
   const offsetY = playerPos.y;
 
+  const halfWindow = Math.floor(WINDOW_SIZE / 2) + 2;
+  const minX = Math.max(0, offsetX - halfWindow);
+  const maxX = Math.min(numCols - 1, offsetX + halfWindow);
+  const minY = Math.max(0, offsetY - halfWindow);
+  const maxY = Math.min(numRows - 1, offsetY + halfWindow);
+
+  const visibleTiles = [];
+  for (let y = minY; y <= maxY; y++) {
+    for (let x = minX; x <= maxX; x++) {
+      visibleTiles.push(
+        <Tile key={`${x},${y}`} value={map[y][x]} x={x} y={y} />
+      );
+    }
+  }
+
   return (
     <Window className="map-window">
       <MapContent
@@ -62,9 +70,7 @@ const MapWindow = ({ map, playerPos, facing }) => {
         $offsetX={offsetX}
         $offsetY={offsetY}
       >
-        {map.map((row, y) =>
-          row.map((cell, x) => (<Tile key={`${x},${y}`} value={cell} x={x} y={y} />))
-        )}
+        {visibleTiles}
       </MapContent>
       <PlayerOverlay className="player-overlay">{directionArrow(facing)}</PlayerOverlay>
     </Window>
