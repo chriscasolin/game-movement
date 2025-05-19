@@ -1,6 +1,6 @@
 import Tile from "./Tile";
 import '../css/Map.css';
-import { directionArrow, TILE_SIZE, WINDOW_SIZE } from "./util";
+import { directionArrow, mapKey, TILE_SIZE, WINDOW_SIZE } from "./util";
 import styled from "styled-components";
 
 const PlayerOverlay = styled.div`
@@ -9,11 +9,10 @@ const PlayerOverlay = styled.div`
   position: absolute;
   top: ${Math.floor(WINDOW_SIZE / 2) * TILE_SIZE}px;
   left: ${Math.floor(WINDOW_SIZE / 2) * TILE_SIZE}px;
-  background-color: lightblue;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
+  -webkit-text-stroke: 2px black;
 `
 
 const MapContent = styled.div.attrs(({ $offsetX, $offsetY }) => ({
@@ -40,8 +39,8 @@ const Window = styled.div`
 `
 
 const MapWindow = ({ map, playerPos, facing }) => {
-  const numRows = map.length;
-  const numCols = map[0].length;
+  const numRows = map.size.y;
+  const numCols = map.size.x;
 
   const offsetX = playerPos.x;
   const offsetY = playerPos.y;
@@ -55,8 +54,9 @@ const MapWindow = ({ map, playerPos, facing }) => {
   const visibleTiles = [];
   for (let y = minY; y <= maxY; y++) {
     for (let x = minX; x <= maxX; x++) {
+      const key = mapKey(x, y)
       visibleTiles.push(
-        <Tile key={`${x},${y}`} value={map[y][x]} x={x} y={y} />
+        <Tile key={key} data={map.tiles[key]} x={x} y={y} />
       );
     }
   }

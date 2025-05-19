@@ -10,25 +10,16 @@ const StyledTile = styled.div.attrs(({ $x, $y }) => ({
   position: absolute;
   width: ${TILE_SIZE}px;
   height: ${TILE_SIZE}px;
+  border: none;
 `
 
-const Tile = ({ value, hasPlayer, x, y }) => {
-  const valToClass = (value) => {
-    switch (value) {
-      case 'X':
-        return 'obstacle'
-      case '.':
-        return 'none'
-      default:
-        return 'empty'
-    }
+const Tile = ({ data, x, y }) => {
+  const buildClasses = (data) => {
+    return ["tile", data.ground?.type, data.object?.type].join(' ')
   }
 
-  const buildClasses = (value) => {
-    return ["Tile", valToClass(value), hasPlayer ? 'player' : ''].join(' ')
-  }
-
-  return <StyledTile className={buildClasses(value)} $x={x} $y={y}
+  return <StyledTile
+    className={buildClasses(data)} $x={x} $y={y}
   />
 
 }

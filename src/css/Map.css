@@ -1,23 +1,30 @@
-.Map {
-  background-color: lightblue;
-  display: flex;
-}
-
-.Tile {
+.tile {
   width: 30px;
   height: 30px;
   /* transition: 'transform 0.2s ease'; */
 }
 
-.Tile.empty {
-  background-color: darkolivegreen;
+.tile.empty {
+  background-color: #AAA;
 }
 
-.Tile.obstacle {
+.tile.grass {
+  background-image: url('../../public/textures/grass.png');
+  background-size: cover;
+}
+
+.tile.tree {
+  background-image: url('../../public/textures/tree_outlined.png'), url('../../public/textures/grass.png');
+  background-size: cover;
+}
+
+.tile.barrier {
   background-color: #111;
+  background-image: url('../../public/textures/barrier.png'), url('../../public/textures/grass.png');
+  background-size: cover;
 }
 
-.Tile.none {
+.tile.none {
   background-color: black;
 }
 

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import MapWindow from "./MapWindow";
-import { direction, INITIAL_DIRECTION } from "./util";
+import { direction, INITIAL_DIRECTION, INITIAL_POSITION, mapKey, SOLID_OBJECTS } from "./util";
 
 const INITIAL_DELAY = 80; // Delay before first movement repeat
 const MOVE_INTERVAL = 100;  // Interval between repeated movements
@@ -12,7 +12,7 @@ const RIGHT_KEYS = new Set(['ArrowRight', 'd'])
 const MOVEMENT_KEYS = new Set(UP_KEYS.union(DOWN_KEYS).union(LEFT_KEYS).union(RIGHT_KEYS));
 
 const Game = () => {
-  const [position, setPosition] = useState({ x: 5, y: 5 });
+  const [position, setPosition] = useState(INITIAL_POSITION);
   const positionRef = useRef(position)
   const [map, setMap] = useState(null);
   const mapRef = useRef(map)
@@ -49,7 +49,9 @@ const Game = () => {
     if (!heldKeys.current.has('Shift')) {
       const newX = positionRef.current.x + delta.dx
       const newY = positionRef.current.y + delta.dy
-      if (mapRef.current[newY][newX] !== "X") {
+      const key = mapKey(newX, newY)
+      // console.log(mapRef.current.tiles[key]?.object?.type)
+      if (!SOLID_OBJECTS.has((mapRef.current.tiles[key]?.object?.type))) {
         setPosition((prev) => ({
           x: prev.x + delta.dx,
           y: prev.y + delta.dy,
@@ -66,7 +68,7 @@ const Game = () => {
     if ([...LEFT_KEYS].some(k => keys.has(k))) dx -= 1;
     if ([...RIGHT_KEYS].some(k => keys.has(k))) dx += 1;
     // console.log(newMomentum)
-    return {dx, dy}
+    return { dx, dy }
   }
 
   // TODO: This does not actually do anything. Momentum ref does not relfect
@@ -135,11 +137,12 @@ const Game = () => {
 
   useEffect(() => {
     if (!map) {
-      fetch('/worlds/large.json')
+      fetch('/worlds/demo.json')
         .then(res => res.json())
         .then(data => {
           setMap(data)
           mapRef.current = data
+          setPosition({ x: data.position.x, y: data.position.y })
         });
     }
   }, []);

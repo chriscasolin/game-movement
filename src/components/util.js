@@ -25,6 +25,7 @@ export class direction {
 }
 
 export const INITIAL_DIRECTION = direction.N
+export const INITIAL_POSITION = { x: 0, y: 0 }
 
 export const directionArrow = (d) => {
   switch (d) {
@@ -48,3 +49,12 @@ export const directionArrow = (d) => {
       return "?"
   }
 }
+
+export const Tiles = {
+  GRASS: "grass",
+  TREE: "tree",
+  BARRIER: "barrier"
+}
+
+export const SOLID_OBJECTS = new Set([Tiles.BARRIER, Tiles.TREE])
+export const mapKey = (x, y) =>  `${x}_${y}`

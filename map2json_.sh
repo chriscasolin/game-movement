@@ -7,4 +7,6 @@ mapfile="map.txt"
   exit 1
 }
 
-ground=$(sed 'q\.' !$"$mapfile")
+echo "["
+sed -E 's/(.)/"\1", /g' map.txt | sed -E 's/\, $//g' | sed -E 's/(.*)/  [ \1 ],/' | sed -E '$ s/.$//'
+echo "\n]"
