@@ -1,5 +1,6 @@
-export const TILE_SIZE = 32; // px
-export const WINDOW_SIZE = 20;
+export const TILE_SIZE = 50; // px
+export const WINDOW_SIZE_X = 16;
+export const WINDOW_SIZE_Y = 12;
 
 export class direction {
   static N = { dx: 0, dy: -1 }
@@ -24,29 +25,31 @@ export class direction {
   }
 }
 
-export const INITIAL_DIRECTION = direction.N
+export const INITIAL_DIRECTION = direction.S
 export const INITIAL_POSITION = { x: 0, y: 0 }
 
-export const directionArrow = (d) => {
+export const link = (filename) => `url('textures/${filename}')`
+
+export const directionAsset = (d) => {
   switch (d) {
     case direction.N:
-      return "↑"
+      return link('player_n.png')
     case direction.S:
-      return "↓"
+      return link('player_s.png')
     case direction.W:
-      return "←"
+      return link('player_w.png')
     case direction.E:
-      return "→"
+      return link('player_e.png')
     case direction.NW:
-      return "↖"
+      return link('player_nw.png')
     case direction.NE:
-      return "↗"
+      return link('player_ne.png')
     case direction.SW:
-      return "↙"
+      return link('player_sw.png')
     case direction.SE:
-      return "↘"
+      return link('player_se.png')
     default:
-      return "?"
+      return link('missing.png')
   }
 }
 

@@ -3,7 +3,7 @@ import MapWindow from "./MapWindow";
 import { direction, INITIAL_DIRECTION, INITIAL_POSITION, mapKey, SOLID_OBJECTS } from "./util";
 
 const INITIAL_DELAY = 80; // Delay before first movement repeat
-const MOVE_INTERVAL = 100;  // Interval between repeated movements
+const MOVE_INTERVAL = 150;  // Interval between repeated movements
 const MOVE_AMOUNT = 1;
 const UP_KEYS = new Set(['ArrowUp', 'w'])
 const DOWN_KEYS = new Set(['ArrowDown', 's'])
@@ -42,8 +42,9 @@ const Game = () => {
   };
 
   const applyMovement = (delta) => {
-    if (!heldKeys.current.has('Alt') && direction.of(delta)) {
-      setFacing(direction.of(delta));
+    if (!heldKeys.current.has('Alt')) {
+      const newDirection = direction.of(calculateMomentum());
+      if (newDirection) setFacing(newDirection);
     }
 
     if (!heldKeys.current.has('Shift')) {

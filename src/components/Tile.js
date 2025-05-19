@@ -1,5 +1,5 @@
 import styled from "styled-components"
-import { TILE_SIZE } from "./util"
+import { link, TILE_SIZE } from "./util"
 
 const StyledTile = styled.div.attrs(({ $x, $y }) => ({
   style: {
@@ -29,9 +29,7 @@ const source = (asset) => {
 }
 
 const buildBackground = (data) => {
-  const link = (filename) => `url('textures/${filename}')`
   let sources = []
-
   if (data.object) {
     sources.push(source(data.object.type))
   }

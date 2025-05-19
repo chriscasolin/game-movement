@@ -1,24 +1,22 @@
 import Tile from "./Tile";
 // import '../css/Map.css';
-import { directionArrow, mapKey, TILE_SIZE, WINDOW_SIZE } from "./util";
+import { directionAsset, mapKey, TILE_SIZE, WINDOW_SIZE_X, WINDOW_SIZE_Y } from "./util";
 import styled from "styled-components";
 
 const PlayerOverlay = styled.div`
   width: ${TILE_SIZE}px;
   height: ${TILE_SIZE}px;
   position: absolute;
-  top: ${Math.floor(WINDOW_SIZE / 2) * TILE_SIZE}px;
-  left: ${Math.floor(WINDOW_SIZE / 2) * TILE_SIZE}px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  -webkit-text-stroke: 2px black;
+  top: ${Math.floor(WINDOW_SIZE_Y / 2) * TILE_SIZE - TILE_SIZE / 4}px;
+  left: ${Math.floor(WINDOW_SIZE_X / 2) * TILE_SIZE}px;
+  background-image: ${({$background}) => $background};
+  background-size: cover;
 `
 
 const MapContent = styled.div.attrs(({ $offsetX, $offsetY }) => ({
   style: {
-    transform: `translate(${(-$offsetX + Math.floor(WINDOW_SIZE / 2)) * TILE_SIZE}px,
-                          ${(-$offsetY + Math.floor(WINDOW_SIZE / 2)) * TILE_SIZE}px)`
+    transform: `translate(${(-$offsetX + Math.floor(WINDOW_SIZE_X / 2)) * TILE_SIZE}px,
+                          ${(-$offsetY + Math.floor(WINDOW_SIZE_Y / 2)) * TILE_SIZE}px)`
   }
 }))`
   width: ${({ $numCols }) => $numCols * TILE_SIZE}px;
@@ -28,8 +26,8 @@ const MapContent = styled.div.attrs(({ $offsetX, $offsetY }) => ({
 `;
 
 const Window = styled.div`
-  width: ${WINDOW_SIZE * TILE_SIZE}px;
-  height: ${WINDOW_SIZE * TILE_SIZE}px;
+  width: ${WINDOW_SIZE_X * TILE_SIZE}px;
+  height: ${WINDOW_SIZE_Y * TILE_SIZE}px;
   overflow: hidden;
   position: relative;
   border: 0.2rem solid black;
@@ -45,11 +43,12 @@ const MapWindow = ({ map, playerPos, facing }) => {
   const offsetX = playerPos.x;
   const offsetY = playerPos.y;
 
-  const halfWindow = Math.floor(WINDOW_SIZE / 2) + 2;
-  const minX = Math.max(0, offsetX - halfWindow);
-  const maxX = Math.min(numCols - 1, offsetX + halfWindow);
-  const minY = Math.max(0, offsetY - halfWindow);
-  const maxY = Math.min(numRows - 1, offsetY + halfWindow);
+  const halfWindowX = Math.floor(WINDOW_SIZE_X / 2) + 2;
+  const halfWindowY = Math.floor(WINDOW_SIZE_Y / 2) + 2;
+  const minX = Math.max(0, offsetX - halfWindowX);
+  const maxX = Math.min(numCols - 1, offsetX + halfWindowX);
+  const minY = Math.max(0, offsetY - halfWindowY);
+  const maxY = Math.min(numRows - 1, offsetY + halfWindowY);
 
   const visibleTiles = [];
   for (let y = minY; y <= maxY; y++) {
@@ -72,7 +71,10 @@ const MapWindow = ({ map, playerPos, facing }) => {
       >
         {visibleTiles}
       </MapContent>
-      <PlayerOverlay className="player-overlay">{directionArrow(facing)}</PlayerOverlay>
+      <PlayerOverlay
+        className="player-overlay"
+        $background={directionAsset(facing)}
+      />
     </Window>
   );
 };
