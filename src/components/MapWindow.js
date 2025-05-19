@@ -1,5 +1,5 @@
 import Tile from "./Tile";
-import '../css/Map.css';
+// import '../css/Map.css';
 import { directionArrow, mapKey, TILE_SIZE, WINDOW_SIZE } from "./util";
 import styled from "styled-components";
 

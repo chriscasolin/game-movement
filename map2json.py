@@ -12,6 +12,7 @@ from collections import defaultdict
 
 def codeToName(code):
   if code == 'G': return 'grass'
+  if code == 'S': return 'stone'
   if code == 'T': return 'tree'
   if code == 'X': return 'barrier'
 
@@ -38,7 +39,7 @@ try:
     map["position"]["x"] = posX
     map["position"]["y"] = posY
     y = 0
-    for line in f.readlines()[1:]:
+    for line in f.readlines():
       if line.startswith('.'):
         location = locations.pop(0)
         y = 0
@@ -46,7 +47,8 @@ try:
       else:
         for x, code in enumerate(line.strip()):
           key = f"{x}_{y}"
-          map["tiles"][key][location] = { "type": codeToName(code)}
+          if code.strip():
+            map["tiles"][key][location] = { "type": codeToName(code)}
       y += 1
 
 except FileNotFoundError:
