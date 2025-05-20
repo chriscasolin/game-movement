@@ -21,11 +21,11 @@ export class direction {
     if (d.dx === 1 && d.dy === -1) return direction.NE;
     if (d.dx === -1 && d.dy === 1) return direction.SW;
     if (d.dx === 1 && d.dy === 1) return direction.SE;
-    return null;
+    return direction.S;
   }
 }
 
-export const INITIAL_DIRECTION = direction.S
+export const INITIAL_DIRECTION = direction.S;
 export const INITIAL_POSITION = { x: 0, y: 0 }
 
 export const link = (filename) => `url('textures/${filename}')`
@@ -61,3 +61,28 @@ export const Tiles = {
 
 export const SOLID_OBJECTS = new Set([Tiles.BARRIER, Tiles.TREE])
 export const mapKey = (x, y) =>  `${x}_${y}`
+
+export const KEY = {
+  NORTH: 'arrowup',
+  SOUTH: 'arrowdown',
+  EAST: 'arrowright',
+  WEST: 'arrowleft',
+  STILL: 'shift',
+  STRAFE: 'alt',
+  BREAK: 'c',
+  INTERACT: 'x',
+  INVENTORY: 'z',
+  TARGET_DISTANCE: 'a'
+}
+
+export const MOVEMENT_KEYS = new Set([KEY.NORTH, KEY.SOUTH, KEY.EAST, KEY.WEST]);
+
+export const keyCode = (event) => event.key.toLowerCase()
+
+export const target_coord = (position, facing, target_distance) => {
+  let target_x = position.x + target_distance * facing.dx
+  let target_y = position.y + target_distance * facing.dy
+  return { x: target_x, y: target_y }
+}
+
+export const MAX_TARGET_DISTANCE = 1;
