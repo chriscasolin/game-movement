@@ -14,6 +14,14 @@ const StyledTile = styled.div.attrs(({ $x, $y }) => ({
   background-image: ${({ $background }) => $background};
   background-size: cover;
 `
+
+const SelectedIndicator = styled.div`
+  height: 95%;
+  width: 95%;
+  background-color: rgba(255,255,255, 0.1);
+  border: 0.1rem solid rgba(0,0,0, 0.5);
+`
+
 const buildClasses = (data) => {
   return ["tile", data.ground?.type, data.object?.type].join(' ')
 }
@@ -41,13 +49,17 @@ const buildBackground = (data) => {
   return ret
 }
 
-const Tile = ({ data, x, y }) => {
+const Tile = ({ data, x, y, selected }) => {
   return <StyledTile
     className={buildClasses(data)}
     $background={buildBackground(data)}
     $x={x}
     $y={y}
-  />
+  >
+    {(selected.x === x && selected.y === y) &&
+      <SelectedIndicator />
+    }
+  </StyledTile>
 
 }
 

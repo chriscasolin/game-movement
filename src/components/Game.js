@@ -9,6 +9,7 @@ const Game = () => {
   const [playerState, setPlayerState] = useState(null);
 
   const [realTarget, setRealTarget] = useState(0)
+  const [selected, setSelected] = useState({ x: 0, y: 0 })
 
   useEffect(() => {
     if (playerState) {
@@ -25,6 +26,7 @@ const Game = () => {
         d++
       }
       setRealTarget(d)
+      setSelected({ x: x + d * dx, y: y + d * dy })
     }
   }, [playerState])
 
@@ -43,7 +45,7 @@ const Game = () => {
               open: false,
               content: ['log', 'stone', 'stick']
             },
-            target_distance: 0
+            target_distance: MAX_TARGET_DISTANCE
           });
         });
     }
@@ -63,6 +65,7 @@ const Game = () => {
         facing={playerState.facing}
         inventory={playerState.inventory}
         target_distance={realTarget}
+        selected={selected}
       />
       <Player
         map={map}

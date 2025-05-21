@@ -4,14 +4,35 @@ import Tile from "./Tile";
 import { directionAsset, mapKey, TILE_SIZE, WINDOW_SIZE_X, WINDOW_SIZE_Y } from "./util";
 import styled from "styled-components";
 
-const PlayerOverlay = styled.div`
+const PlayerContainer = styled.div`
   width: ${TILE_SIZE}px;
   height: ${TILE_SIZE}px;
   position: absolute;
-  top: ${Math.floor(WINDOW_SIZE_Y / 2) * TILE_SIZE - TILE_SIZE / 4}px;
+  top: ${Math.floor(WINDOW_SIZE_Y / 2) * TILE_SIZE}px;
   left: ${Math.floor(WINDOW_SIZE_X / 2) * TILE_SIZE}px;
+  
+  display: flex;
+  justify-content: center;
+  align-items: end;
+`
+
+const PlayerGraphic = styled.div`
+  height: 100%;
+  width: 100%;
   background-image: ${({ $background }) => $background};
   background-size: cover;
+  position: absolute;
+  margin-bottom: 25%;
+`
+
+const Shadow = styled.div`
+  height: 30%;
+  width: 60%;
+  margin-bottom: 15%;
+  background-color: rgba(0, 0, 0, 0.5);
+  box-shadow: 0px 0px 2px rgb(0,0,0);
+  border-radius: 50%;
+  position: absolute;
 `
 
 const MapContent = styled.div.attrs(({ $offsetX, $offsetY }) => ({
@@ -41,8 +62,8 @@ const TargetContainer = styled.div`
   height: ${TILE_SIZE}px;
   width: ${TILE_SIZE}px;
   position: absolute;
-  top: ${({$target}) => (Math.floor(WINDOW_SIZE_Y / 2) + $target.y) * TILE_SIZE}px;
-  left: ${({$target}) => (Math.floor(WINDOW_SIZE_Y / 2) + $target.x + 2) * TILE_SIZE}px;
+  top: ${({ $target }) => (Math.floor(WINDOW_SIZE_Y / 2) + $target.y) * TILE_SIZE}px;
+  left: ${({ $target }) => (Math.floor(WINDOW_SIZE_Y / 2) + $target.x + 2) * TILE_SIZE}px;
 
   transition: top 0.2s, left 0.2s;
 
@@ -52,13 +73,14 @@ const TargetContainer = styled.div`
 `
 
 const TargetVisual = styled.div`
-  height: ${TILE_SIZE / 1.4}px;
-  width: ${TILE_SIZE / 1.2}px;
-  background-color: rgba(200,200,200, 0.3);
+  height: ${TILE_SIZE / 1.2}px;
+  width: ${TILE_SIZE}px;
+  background-color: rgba(255,255,255, 0.1);
+  border: 0.1rem solid rgba(0,0,0, 0.5);
   border-radius: 50%;
 `
 
-const MapWindow = ({ map, position, facing, inventory, target_distance }) => {
+const MapWindow = ({ map, position, facing, inventory, target_distance, selected}) => {
   const numRows = map.size.y;
   const numCols = map.size.x;
 
@@ -77,7 +99,7 @@ const MapWindow = ({ map, position, facing, inventory, target_distance }) => {
     for (let x = minX; x <= maxX; x++) {
       const key = mapKey(x, y)
       visibleTiles.push(
-        <Tile key={key} data={map.tiles[key]} x={x} y={y} />
+        <Tile key={key} data={map.tiles[key]} x={x} y={y} selected={selected}/>
       );
     }
   }
@@ -94,14 +116,18 @@ const MapWindow = ({ map, position, facing, inventory, target_distance }) => {
         {visibleTiles}
       </MapContent>
       <TargetContainer
-        $target={{ x: target_distance * facing.dx, y: target_distance * facing.dy}}
+        $target={{ x: target_distance * facing.dx, y: target_distance * facing.dy }}
       >
-        <TargetVisual/>
+        <TargetVisual />
       </TargetContainer>
-      <PlayerOverlay
+      <PlayerContainer
         className="player-overlay"
-        $background={directionAsset(facing)}
-      />
+      >
+        <Shadow/>
+        <PlayerGraphic
+          $background={directionAsset(facing)}
+        />
+      </PlayerContainer>
       {
         inventory.open &&
         <Inventory
