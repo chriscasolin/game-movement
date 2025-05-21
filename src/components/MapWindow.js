@@ -54,7 +54,7 @@ const TargetContainer = styled.div`
 const TargetVisual = styled.div`
   height: ${TILE_SIZE / 1.4}px;
   width: ${TILE_SIZE / 1.2}px;
-  background-color: rgba(0,0,0, 0.3);
+  background-color: rgba(200,200,200, 0.3);
   border-radius: 50%;
 `
 
@@ -81,7 +81,7 @@ const MapWindow = ({ map, position, facing, inventory, target_distance }) => {
       );
     }
   }
-  
+
   return (
     <Window className="map-window">
       <MapContent

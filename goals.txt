@@ -37,8 +37,7 @@ Ability to break tiles
   if empty, target floor
 
 Targetting interfact
-  White dot on floor, either a block ahead of player or on player.
-  Toggle visibility.
+  indicator for breaking
 
 Missing floor textures
   hole in ground

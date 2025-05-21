@@ -85,4 +85,4 @@ export const target_coord = (position, facing, target_distance) => {
   return { x: target_x, y: target_y }
 }
 
-export const MAX_TARGET_DISTANCE = 1;
+export const MAX_TARGET_DISTANCE = 2;

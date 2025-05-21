@@ -1,12 +1,32 @@
 import { useEffect, useRef, useState } from "react";
 import MapWindow from "./MapWindow";
 import Player from "./Player";
-import { INITIAL_DIRECTION } from "./util";
+import { INITIAL_DIRECTION, mapKey, MAX_TARGET_DISTANCE } from "./util";
 
 const Game = () => {
   const [map, setMap] = useState(null);
   const mapRef = useRef(null);
   const [playerState, setPlayerState] = useState(null);
+
+  const [realTarget, setRealTarget] = useState(0)
+
+  useEffect(() => {
+    if (playerState) {
+      let d = 0;
+      let x = playerState.position.x
+      let y = playerState.position.y
+      let dx = playerState.facing.dx
+      let dy = playerState.facing.dy
+      while (d < playerState.target_distance) {
+        const key = mapKey(x + d * dx, y + d * dy)
+        if (map.tiles[key].object) {
+          break
+        }
+        d++
+      }
+      setRealTarget(d)
+    }
+  }, [playerState])
 
   useEffect(() => {
     if (!map) {
@@ -42,7 +62,7 @@ const Game = () => {
         position={playerState.position}
         facing={playerState.facing}
         inventory={playerState.inventory}
-        target_distance={playerState.target_distance}
+        target_distance={realTarget}
       />
       <Player
         map={map}
