@@ -68,11 +68,11 @@ export const KEY = {
   SOUTH: 'arrowdown',
   EAST: 'arrowright',
   WEST: 'arrowleft',
-  STILL: 'shift',
-  STRAFE: 'alt',
+  STILL: 'alt',
+  STRAFE: 'shift',
   BREAK: 'c',
   INTERACT: 'x',
-  INVENTORY: 'z',
+  INVENTORY: 'd',
   TARGET_DISTANCE: 'a'
 }
 
@@ -87,3 +87,5 @@ export const target_coord = (position, facing, target_distance) => {
 }
 
 export const MAX_TARGET_DISTANCE = 2;
+
+export const BREAK_TIME = 500;

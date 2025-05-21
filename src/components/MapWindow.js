@@ -44,7 +44,7 @@ const MapContent = styled.div.attrs(({ $offsetX, $offsetY }) => ({
   width: ${({ $numCols }) => $numCols * TILE_SIZE}px;
   height: ${({ $numRows }) => $numRows * TILE_SIZE}px;
   position: absolute;
-  // transition: transform 0.2s ease;
+  transition: transform 0.05s linear;
 `;
 
 const Window = styled.div`
@@ -58,8 +58,13 @@ const Window = styled.div`
   border-radius: 5px;
 `
 
-const MapWindow = ({ map, position, facing, inventory, target_distance, selected}) => {
-  console.log(position)
+const MapWindow = ({ map,
+  position,
+  facing,
+  inventory,
+  selected,
+  breakTimer
+}) => {
   const numRows = map.size.y;
   const numCols = map.size.x;
 
@@ -78,7 +83,14 @@ const MapWindow = ({ map, position, facing, inventory, target_distance, selected
     for (let x = minX; x <= maxX; x++) {
       const key = mapKey(x, y)
       visibleTiles.push(
-        <Tile key={key} data={map.tiles[key]} x={x} y={y} selected={selected}/>
+        <Tile
+          key={key}
+          data={map.tiles[key]}
+          x={x}
+          y={y}
+          selected={selected}
+          breakTimer={breakTimer}
+        />
       );
     }
   }
@@ -97,7 +109,7 @@ const MapWindow = ({ map, position, facing, inventory, target_distance, selected
       <PlayerContainer
         className="player-overlay"
       >
-        <Shadow/>
+        <Shadow />
         <PlayerGraphic
           $background={directionAsset(facing)}
         />

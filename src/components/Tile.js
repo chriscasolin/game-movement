@@ -22,6 +22,15 @@ const SelectedIndicator = styled.div`
   border: 0.1rem solid rgba(0,0,0, 0.5);
 `
 
+const BreakBar = styled.div`
+  height: ${({ $breakTimer }) => $breakTimer ? 100 : 0}%;
+  width: 100%;
+  transition: ${({ $breakTimer }) => $breakTimer ? $breakTimer / 1000 : 0}s linear;
+  background-color: rgba(0,0,0, 0.4);
+  position: absolute;
+  bottom: 0;
+`
+
 const buildClasses = (data) => {
   return ["tile", data.ground?.type, data.object?.type].join(' ')
 }
@@ -49,7 +58,13 @@ const buildBackground = (data) => {
   return ret
 }
 
-const Tile = ({ data, x, y, selected }) => {
+const Tile = ({
+  data,
+  x,
+  y,
+  selected,
+  breakTimer
+}) => {
   return <StyledTile
     className={buildClasses(data)}
     $background={buildBackground(data)}
@@ -57,7 +72,11 @@ const Tile = ({ data, x, y, selected }) => {
     $y={y}
   >
     {(selected.x === x && selected.y === y) &&
-      <SelectedIndicator />
+      <SelectedIndicator>
+        <BreakBar
+        $breakTimer={breakTimer}
+        />
+      </SelectedIndicator>
     }
   </StyledTile>
 

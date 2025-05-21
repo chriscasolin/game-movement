@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import MapWindow from "./MapWindow";
 import Player from "./Player";
 import { INITIAL_DIRECTION, mapKey, MAX_TARGET_DISTANCE, WORLD_FILE } from "./util";
@@ -7,26 +7,6 @@ const Game = () => {
   const [map, setMap] = useState(null);
   const mapRef = useRef(null);
   const [playerState, setPlayerState] = useState(null);
-
-  const [selected, setSelected] = useState({ x: 0, y: 0 })
-
-  useEffect(() => {
-    if (playerState) {
-      let d = 0;
-      let x = playerState.position.x
-      let y = playerState.position.y
-      let dx = playerState.facing.dx
-      let dy = playerState.facing.dy
-      while (d < playerState.target_distance) {
-        const key = mapKey(x + d * dx, y + d * dy)
-        if (map.tiles[key].object) {
-          break
-        }
-        d++
-      }
-      setSelected({ x: Math.round(x + d * dx), y: Math.round(y + d * dy) })
-    }
-  }, [playerState])
 
   useEffect(() => {
     if (!map) {
@@ -43,7 +23,9 @@ const Game = () => {
               open: false,
               content: ['log', 'stone', 'stick']
             },
-            target_distance: MAX_TARGET_DISTANCE
+            targetDistance: MAX_TARGET_DISTANCE,
+            selected: { x: 0, y: 0 },
+            breakTimer: null
           });
         });
     }
@@ -53,9 +35,17 @@ const Game = () => {
     setPlayerState((prev) => ({ ...prev, ...updates }));
   };
 
-  if (!map || !playerState) return <div>Loading...</div>;
+  const handleMapUpdate = (tileUpdates) => {
+    setMap(prev => ({
+      ...prev,
+      tiles: {
+        ...prev.tiles,
+        ...tileUpdates
+      }
+    }));
+  };
 
-  console.log(playerState.position)
+  if (!map || !playerState) return <div>Loading...</div>;
 
   return (
     <>
@@ -64,16 +54,19 @@ const Game = () => {
         position={playerState.position}
         facing={playerState.facing}
         inventory={playerState.inventory}
-        selected={selected}
+        selected={playerState.selected}
+        breakTimer={playerState.breakTimer}
       />
       <Player
+        onPlayerUpdate={handlePlayerUpdate}
+        onMapUpdate={handleMapUpdate}
         map={map}
         position={playerState.position}
-        facing={playerState.facing}
         momentum={playerState.momentum}
+        facing={playerState.facing}
         inventory={playerState.inventory}
-        onUpdate={handlePlayerUpdate}
-        target_distance={playerState.target_distance}
+        targetDistance={playerState.targetDistance}
+        selected={playerState.selected}
       />
     </>
   );
