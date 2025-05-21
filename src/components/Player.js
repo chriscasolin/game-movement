@@ -36,9 +36,17 @@ const Player = ({
       dx = dx * 0.7
       dy = dy * 0.7
     }
-    
+
     return { dx, dy };
   };
+
+  const canGo = (key) => {
+    return !SOLID_OBJECTS.has((mapRef.current.tiles[key]?.object?.type))
+  }
+
+  const moveTo = (x, y) => {
+    onUpdate({ position: { x: x, y: y } });
+  }
 
   const applyMovement = (delta) => {
     if (!heldKeys.current.has(KEY.STRAFE)) {
@@ -47,16 +55,18 @@ const Player = ({
     }
 
     if (!heldKeys.current.has(KEY.STILL)) {
-      const newX = positionRef.current.x + delta.dx;
-      const newY = positionRef.current.y + delta.dy;
-      const key = mapKey(newX, newY);
-      if (!SOLID_OBJECTS.has((mapRef.current.tiles[key]?.object?.type))) {
-        onUpdate({
-          position: {
-            x: positionRef.current.x + delta.dx,
-            y: positionRef.current.y + delta.dy
-          }
-        });
+      const currX = positionRef.current.x
+      const currY = positionRef.current.y
+      const newX = currX + delta.dx;
+      const newY = currY + delta.dy;
+      
+      if (canGo(mapKey(newX, newY))) {
+        moveTo(newX, newY)
+      // Diagonal position may be blocked, so slide against wall
+      } else if (canGo(mapKey(currX, newY))) {
+        moveTo(currX, newY)
+      } else if (mapKey(newX, currY)) {
+        moveTo(newX, currY)
       }
     }
   };
