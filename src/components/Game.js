@@ -1,14 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import MapWindow from "./MapWindow";
 import Player from "./Player";
-import { INITIAL_DIRECTION, mapKey, MAX_TARGET_DISTANCE } from "./util";
+import { INITIAL_DIRECTION, mapKey, MAX_TARGET_DISTANCE, WORLD_FILE } from "./util";
 
 const Game = () => {
   const [map, setMap] = useState(null);
   const mapRef = useRef(null);
   const [playerState, setPlayerState] = useState(null);
 
-  const [realTarget, setRealTarget] = useState(0)
   const [selected, setSelected] = useState({ x: 0, y: 0 })
 
   useEffect(() => {
@@ -25,14 +24,13 @@ const Game = () => {
         }
         d++
       }
-      setRealTarget(d)
-      setSelected({ x: x + d * dx, y: y + d * dy })
+      setSelected({ x: Math.round(x + d * dx), y: Math.round(y + d * dy) })
     }
   }, [playerState])
 
   useEffect(() => {
     if (!map) {
-      fetch('/worlds/demo.json')
+      fetch(WORLD_FILE)
         .then(res => res.json())
         .then(data => {
           setMap(data);
@@ -57,6 +55,8 @@ const Game = () => {
 
   if (!map || !playerState) return <div>Loading...</div>;
 
+  console.log(playerState.position)
+
   return (
     <>
       <MapWindow
@@ -64,7 +64,6 @@ const Game = () => {
         position={playerState.position}
         facing={playerState.facing}
         inventory={playerState.inventory}
-        target_distance={realTarget}
         selected={selected}
       />
       <Player

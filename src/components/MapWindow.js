@@ -44,7 +44,7 @@ const MapContent = styled.div.attrs(({ $offsetX, $offsetY }) => ({
   width: ${({ $numCols }) => $numCols * TILE_SIZE}px;
   height: ${({ $numRows }) => $numRows * TILE_SIZE}px;
   position: absolute;
-  transition: transform 0.45s;
+  // transition: transform 0.2s ease;
 `;
 
 const Window = styled.div`
@@ -58,41 +58,20 @@ const Window = styled.div`
   border-radius: 5px;
 `
 
-const TargetContainer = styled.div`
-  height: ${TILE_SIZE}px;
-  width: ${TILE_SIZE}px;
-  position: absolute;
-  top: ${({ $target }) => (Math.floor(WINDOW_SIZE_Y / 2) + $target.y) * TILE_SIZE}px;
-  left: ${({ $target }) => (Math.floor(WINDOW_SIZE_Y / 2) + $target.x + 2) * TILE_SIZE}px;
-
-  transition: top 0.2s, left 0.2s;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
-
-const TargetVisual = styled.div`
-  height: ${TILE_SIZE / 1.2}px;
-  width: ${TILE_SIZE}px;
-  background-color: rgba(255,255,255, 0.1);
-  border: 0.1rem solid rgba(0,0,0, 0.5);
-  border-radius: 50%;
-`
-
 const MapWindow = ({ map, position, facing, inventory, target_distance, selected}) => {
+  console.log(position)
   const numRows = map.size.y;
   const numCols = map.size.x;
 
   const offsetX = position.x;
   const offsetY = position.y;
 
-  const halfWindowX = Math.floor(WINDOW_SIZE_X / 2) + 2;
-  const halfWindowY = Math.floor(WINDOW_SIZE_Y / 2) + 2;
-  const minX = Math.max(0, offsetX - halfWindowX);
-  const maxX = Math.min(numCols - 1, offsetX + halfWindowX);
-  const minY = Math.max(0, offsetY - halfWindowY);
-  const maxY = Math.min(numRows - 1, offsetY + halfWindowY);
+  const halfWindowX = Math.floor(WINDOW_SIZE_X / 2);
+  const halfWindowY = Math.floor(WINDOW_SIZE_Y / 2);
+  const minX = Math.floor(Math.max(0, offsetX - halfWindowX));
+  const maxX = Math.floor(Math.min(numCols - 1, offsetX + halfWindowX));
+  const minY = Math.floor(Math.max(0, offsetY - halfWindowY));
+  const maxY = Math.floor(Math.min(numRows - 1, offsetY + halfWindowY));
 
   const visibleTiles = [];
   for (let y = minY; y <= maxY; y++) {
@@ -115,11 +94,6 @@ const MapWindow = ({ map, position, facing, inventory, target_distance, selected
       >
         {visibleTiles}
       </MapContent>
-      <TargetContainer
-        $target={{ x: target_distance * facing.dx, y: target_distance * facing.dy }}
-      >
-        <TargetVisual />
-      </TargetContainer>
       <PlayerContainer
         className="player-overlay"
       >

@@ -1,3 +1,4 @@
+export const WORLD_FILE = '/worlds/demo.json'
 export const TILE_SIZE = 50; // px
 export const WINDOW_SIZE_X = 16;
 export const WINDOW_SIZE_Y = 12;
@@ -13,14 +14,14 @@ export class direction {
   static SE = { dx: 1, dy: 1 }
 
   static of(d) {
-    if (d.dx === 0 && d.dy === -1) return direction.N;
-    if (d.dx === 0 && d.dy === 1) return direction.S;
-    if (d.dx === -1 && d.dy === 0) return direction.W;
-    if (d.dx === 1 && d.dy === 0) return direction.E;
-    if (d.dx === -1 && d.dy === -1) return direction.NW;
-    if (d.dx === 1 && d.dy === -1) return direction.NE;
-    if (d.dx === -1 && d.dy === 1) return direction.SW;
-    if (d.dx === 1 && d.dy === 1) return direction.SE;
+    if (d.dx === 0 && d.dy < 0) return direction.N;
+    if (d.dx === 0 && d.dy > 0) return direction.S;
+    if (d.dx < 0 && d.dy === 0) return direction.W;
+    if (d.dx > 0 && d.dy === 0) return direction.E;
+    if (d.dx < 0 && d.dy < 0) return direction.NW;
+    if (d.dx > 0 && d.dy < 0) return direction.NE;
+    if (d.dx < 0 && d.dy > 0) return direction.SW;
+    if (d.dx > 0 && d.dy > 0) return direction.SE;
     return direction.S;
   }
 }
@@ -60,7 +61,7 @@ export const Tiles = {
 }
 
 export const SOLID_OBJECTS = new Set([Tiles.BARRIER, Tiles.TREE])
-export const mapKey = (x, y) =>  `${x}_${y}`
+export const mapKey = (x, y) =>  `${Math.round(x)}_${Math.round(y)}`
 
 export const KEY = {
   NORTH: 'arrowup',
