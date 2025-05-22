@@ -26,7 +26,7 @@ const Player = ({
   useEffect(() => { mapRef.current = map; }, [map]);
   useEffect(() => { positionRef.current = position; }, [position]);
   useEffect(() => { momentumRef.current = momentum; }, [momentum]);
-  useEffect(() => { selectedRef.current = selected; }, [selected]);
+  // useEffect(() => { selectedRef.current = selected; }, [selected]);
 
   useEffect(() => {
     let d = 0;
@@ -42,9 +42,22 @@ const Player = ({
       d++
     }
     const tile = { x: Math.round(x + d * dx), y: Math.round(y + d * dy) }
+
     selected = tile;
     onPlayerUpdate({ selected: tile })
   }, [position, facing, targetDistance, map])
+
+  useEffect(() => {
+    let curr = selectedRef.current
+    if (selected.x !== curr.x || selected.y !== curr.y) {
+      selectedRef.current = selected;
+      onPlayerUpdate({ breakTimer: null })
+      if (heldKeys.current.has(KEY.BREAK)) {
+        cancelBreak();
+        startBreak();
+      }
+    }
+  }, [selected])
 
   const calculateMomentum = () => {
     const keys = heldKeys.current;
@@ -146,7 +159,7 @@ const Player = ({
       if (heldKeys.current.has(KEY.BREAK)) {
         breakTimeout.current = setTimeout(() => {
           startBreak();
-        }, 1000)
+        }, 300)
       }
     }, timer)
   }

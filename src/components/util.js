@@ -88,4 +88,4 @@ export const target_coord = (position, facing, target_distance) => {
 
 export const MAX_TARGET_DISTANCE = 2;
 
-export const BREAK_TIME = 500;
+export const BREAK_TIME = 300;

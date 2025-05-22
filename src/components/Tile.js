@@ -1,5 +1,6 @@
 import styled from "styled-components"
 import { link, TILE_SIZE } from "./util"
+import { useEffect, useState } from "react"
 
 const StyledTile = styled.div.attrs(({ $x, $y }) => ({
   style: {
@@ -65,6 +66,19 @@ const Tile = ({
   selected,
   breakTimer
 }) => {
+  const [timer, setTimer] = useState(null);
+
+  useEffect(() => {
+    if (selected.x === x && selected.y === y && breakTimer) {
+      requestAnimationFrame(() => {
+        setTimer(breakTimer);
+      });
+    } else {
+      setTimer(null);
+    }
+  }, [breakTimer, selected.x, selected.y]);
+
+
   return <StyledTile
     className={buildClasses(data)}
     $background={buildBackground(data)}
@@ -74,7 +88,7 @@ const Tile = ({
     {(selected.x === x && selected.y === y) &&
       <SelectedIndicator>
         <BreakBar
-        $breakTimer={breakTimer}
+          $breakTimer={timer}
         />
       </SelectedIndicator>
     }
