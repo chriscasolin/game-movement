@@ -32,34 +32,25 @@ const BreakBar = styled.div`
   bottom: 0;
 `
 
-const buildClasses = (data) => {
-  return ["tile", data.ground?.type, data.object?.type].join(' ')
+const buildClasses = (tileObj) => {
+  return ["tile", tileObj.ground?.name, tileObj.object?.name].join(' ')
 }
 
-const source = (asset) => {
-  switch (asset) {
-    case ('grass'): return 'grass.png'
-    case ('stone'): return 'stone.png'
-    case ('barrier'): return 'barrier.png'
-    case ('tree'): return 'tree_outlined.png'
-    default: return 'missing.png'
-  }
-}
-
-const buildBackground = (data) => {
+const buildBackground = (tileObj) => {
   let sources = []
-  if (data.object) {
-    sources.push(source(data.object.type))
+
+  if (tileObj.object) {
+    sources.push(tileObj.object.texture)
   }
-  if (data.ground) {
-    sources.push(source(data.ground.type))
+  if (tileObj.ground) {
+    sources.push(tileObj.ground.texture)
   }
 
   const ret = sources.map(s => link(s)).join(', ')
   return ret
 }
 
-const Tile = ({
+const TileVisual = ({
   data,
   x,
   y,
@@ -96,4 +87,4 @@ const Tile = ({
 
 }
 
-export default Tile
+export default TileVisual
