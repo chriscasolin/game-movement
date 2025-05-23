@@ -1,5 +1,5 @@
 import Inventory from "./Inventory";
-import Tile from "./Tile";
+import TileVisual from "./TileVisual";
 // import '../css/Map.css';
 import { directionAsset, mapKey, TILE_SIZE, WINDOW_SIZE_X, WINDOW_SIZE_Y } from "./util";
 import styled from "styled-components";
@@ -83,7 +83,7 @@ const MapWindow = ({ map,
     for (let x = minX; x <= maxX; x++) {
       const key = mapKey(x, y)
       visibleTiles.push(
-        <Tile
+        <TileVisual
           key={key}
           data={map.tiles[key]}
           x={x}

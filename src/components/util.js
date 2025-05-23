@@ -1,7 +1,18 @@
+import Barrier from "./tiles/Barrier";
+import Tree from "./tiles/Tree";
+
 export const WORLD_FILE = '/worlds/demo.json'
 export const TILE_SIZE = 50; // px
 export const WINDOW_SIZE_X = 16;
 export const WINDOW_SIZE_Y = 12;
+
+export const TileName = {
+  NONE: 'none',
+  GRASS: 'grass',
+  STONE: 'stone',
+  BARRIER: 'barrier',
+  TREE: 'tree'
+}
 
 export class direction {
   static N = { dx: 0, dy: -1 }
@@ -54,13 +65,7 @@ export const directionAsset = (d) => {
   }
 }
 
-export const Tiles = {
-  GRASS: "grass",
-  TREE: "tree",
-  BARRIER: "barrier"
-}
-
-export const SOLID_OBJECTS = new Set([Tiles.BARRIER, Tiles.TREE])
+export const SOLID_OBJECTS = new Set([TileName.BARRIER, TileName.TREE])
 export const mapKey = (x, y) =>  `${Math.round(x)}_${Math.round(y)}`
 
 export const KEY = {
