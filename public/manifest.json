@@ -1,0 +1,15 @@
+{
+  "short_name": "2D Game",
+  "name": "2D Game",
+  "icons": [
+    {
+      "src": "tree_outlined.png",
+      "type": "image/png",
+      "sizes": "128x128"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

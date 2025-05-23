@@ -1,0 +1,61 @@
+Class based tiles
+  Methods for:
+  - interact
+  - break
+  - pick_up
+  - walkable
+
+Ability to interact with tiles
+  May have different effects depending on player state
+
+Inventory and recipe interface:
+  build tools, objects and items using materials gathered.
+
+Add functional objects:
+  - workbench
+  - oven
+  - kiln
+  - cabinet
+  - door
+
+Add tools:
+  - pickaxe
+  - axe
+  - shovel
+
+New tiles:
+  - Rocks
+  - Minerals
+  - bush
+
+Ability to pick up objects
+  Carry above head
+  place back down
+
+Ability to break tiles
+  if object on tile, target object first
+  if empty, target floor
+
+Targetting interfact
+  indicator for breaking
+
+Missing floor textures
+  hole in ground
+  connects to adjacent tiles
+
+Water
+  Flow into adjacent holes in ground
+
+Monsters
+  If player in line of sight, start to follow
+  If lost line of sight for n seconds, stop.
+  Move randomly if passive, bfs to player when agro.
+
+Animals
+  Walk around randomly
+  Chance to run away from player
+  Drop meat / resources if killed
+
+  Horses - rideable
+
+Random world generation

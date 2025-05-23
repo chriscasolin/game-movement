@@ -1,0 +1,33 @@
+{
+  "position": {
+    "x": 1,
+    "y": 1
+  },
+  "tiles": {
+    "0_0": {
+      "ground": {
+        "type": "grass"
+      }
+    },
+    "0_1": {
+      "ground": {
+        "type": "grass"
+      },
+      "object": {
+        "type": "tree"
+      }
+    },
+    "0_2": {
+      "ground": {
+        "type": "grass"
+      },
+      "object": {
+        "type": "barrier"
+      }
+    }
+  },
+  "size": {
+    "x": 1,
+    "y": 3
+  }
+}
