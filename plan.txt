@@ -1,7 +1,0 @@
-map each tile to a tile.js object when it is first parsed.
-
-it will have a tileState useState. a handler for this tilestate is passed to the logic classes
-that belong to this tile.
-
-implement interact(tileStateHandler) and break(tileStateHandler) methods for each tile.
-classes should have static default values for BREAK_TIME, DROPS, etc.

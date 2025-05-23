@@ -2,17 +2,6 @@ import { use, useEffect, useRef, useState } from "react";
 import MapWindow from "./MapWindow";
 import Player from "./Player";
 import { INITIAL_DIRECTION, mapKey, MAX_TARGET_DISTANCE, WORLD_FILE } from "./util";
-import Tile from "./tiles/Tile";
-
-const parseMap = (mapObj) => {
-  // console.log(mapObj.tiles)
-  let tiles = Object
-    .fromEntries(Object
-      .entries(mapObj.tiles)
-      .map(([k, tileObj]) => [k, new Tile(tileObj)]))
-  mapObj.tiles = tiles
-  return mapObj
-}
 
 const Game = () => {
   const [map, setMap] = useState(null);
@@ -25,7 +14,7 @@ const Game = () => {
         .then(res => res.json())
         .then(data => {
           setMap(data);
-          mapRef.current = parseMap(data);
+          mapRef.current = data;
           setPlayerState({
             position: { x: data.position.x, y: data.position.y },
             facing: INITIAL_DIRECTION,

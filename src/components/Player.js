@@ -76,7 +76,7 @@ const Player = ({
   };
 
   const canGo = (key) => {
-    return !SOLID_OBJECTS.has(mapRef.current.tiles[key]?.object?.name)
+    return !SOLID_OBJECTS.has((mapRef.current.tiles[key]?.object?.type))
   }
 
   const moveTo = (x, y) => {
