@@ -1,4 +1,4 @@
-export const WORLD_FILE = '/worlds/demo.json'
+export const WORLD_FILE = 'worlds/demo.json'
 export const TILE_SIZE = 50; // px
 export const WINDOW_SIZE_X = 16;
 export const WINDOW_SIZE_Y = 12;
