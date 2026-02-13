@@ -56,10 +56,12 @@ class Tile {
     if (this._has_hole) {
       const adjacentHoles = []
         adjacentTiles.forEach(t => {
-          if (t.tile.has_hole) {
-            adjacentHoles.push(cardinal2letter(t.direction))
-          }
-        });
+            // adjacent tile may be undefined for out-of-bounds positions,
+            // guard against that to avoid runtime errors when reading properties
+            if (t && t.tile && t.tile.has_hole) {
+              adjacentHoles.push(cardinal2letter(t.direction))
+            }
+          });
       const connected_tag = adjacentHoles.join('')
       srcFiles.push(`hole/hole_${connected_tag}.png`)
     }

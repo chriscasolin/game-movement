@@ -1,6 +1,3 @@
-import Barrier from "./tiles/Barrier";
-import Tree from "./tiles/Tree";
-
 export const WORLD_FILE = '/worlds/demo.json'
 export const TILE_SIZE = 50; // px
 export const WINDOW_SIZE_X = 16;
