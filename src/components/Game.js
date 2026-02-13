@@ -1,7 +1,7 @@
-import { use, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import MapWindow from "./MapWindow";
 import Player from "./Player";
-import { INITIAL_DIRECTION, mapKey, MAX_TARGET_DISTANCE, WORLD_FILE } from "./util";
+import { INITIAL_DIRECTION, MAX_TARGET_DISTANCE, WORLD_FILE } from "./util";
 import Tile from "./tiles/Tile";
 
 const parseMap = (mapObj) => {
@@ -9,14 +9,13 @@ const parseMap = (mapObj) => {
   let tiles = Object
     .fromEntries(Object
       .entries(mapObj.tiles)
-      .map(([k, tileObj]) => [k, new Tile(tileObj)]))
+      .map(([k, tileObj]) => [k, new Tile(tileObj, k)]))
   mapObj.tiles = tiles
   return mapObj
 }
 
 const Game = () => {
   const [map, setMap] = useState(null);
-  const mapRef = useRef(null);
   const [playerState, setPlayerState] = useState(null);
 
   useEffect(() => {
@@ -24,8 +23,7 @@ const Game = () => {
       fetch(WORLD_FILE)
         .then(res => res.json())
         .then(data => {
-          setMap(data);
-          mapRef.current = parseMap(data);
+          setMap(parseMap(data));
           setPlayerState({
             position: { x: data.position.x, y: data.position.y },
             facing: INITIAL_DIRECTION,
@@ -36,17 +34,18 @@ const Game = () => {
             },
             targetDistance: MAX_TARGET_DISTANCE,
             selected: { x: 0, y: 0 },
-            breakTimer: null
+            breakTimer: null,
+            isMoving: false
           });
         });
     }
-  }, []);
+  }, [map]);
 
   const handlePlayerUpdate = (updates) => {
     setPlayerState((prev) => ({ ...prev, ...updates }));
   };
 
-  const handleMapUpdate = (tileUpdates) => {
+  const handleTileUpdate = (tileUpdates) => {
     setMap(prev => ({
       ...prev,
       tiles: {
@@ -67,10 +66,11 @@ const Game = () => {
         inventory={playerState.inventory}
         selected={playerState.selected}
         breakTimer={playerState.breakTimer}
+        isMoving={playerState.isMoving}
       />
       <Player
         onPlayerUpdate={handlePlayerUpdate}
-        onMapUpdate={handleMapUpdate}
+        onTileUpdate={handleTileUpdate}
         map={map}
         position={playerState.position}
         momentum={playerState.momentum}

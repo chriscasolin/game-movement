@@ -1,8 +1,9 @@
 import Inventory from "./Inventory";
 import TileVisual from "./TileVisual";
 // import '../css/Map.css';
-import { directionAsset, mapKey, TILE_SIZE, WINDOW_SIZE_X, WINDOW_SIZE_Y } from "./util";
+import { direction, directionAsset, mapKey, TILE_SIZE, WINDOW_SIZE_X, WINDOW_SIZE_Y } from "./util";
 import styled from "styled-components";
+import { useMemo } from "react";
 
 const PlayerContainer = styled.div`
   width: ${TILE_SIZE}px;
@@ -23,6 +24,16 @@ const PlayerGraphic = styled.div`
   background-size: cover;
   position: absolute;
   margin-bottom: 25%;
+  animation: ${({ $isMoving }) => $isMoving ? 'bob 0.3s infinite' : 'none'};
+  
+  @keyframes bob {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-3px);
+    }
+  }
 `
 
 const Shadow = styled.div`
@@ -44,7 +55,7 @@ const MapContent = styled.div.attrs(({ $offsetX, $offsetY }) => ({
   width: ${({ $numCols }) => $numCols * TILE_SIZE}px;
   height: ${({ $numRows }) => $numRows * TILE_SIZE}px;
   position: absolute;
-  transition: transform 0.05s linear;
+  transition: none;
 `;
 
 const Window = styled.div`
@@ -58,12 +69,14 @@ const Window = styled.div`
   border-radius: 5px;
 `
 
-const MapWindow = ({ map,
+const MapWindow = ({
+  map,
   position,
   facing,
   inventory,
   selected,
-  breakTimer
+  breakTimer,
+  isMoving
 }) => {
   const numRows = map.size.y;
   const numCols = map.size.x;
@@ -78,22 +91,44 @@ const MapWindow = ({ map,
   const minY = Math.floor(Math.max(0, offsetY - halfWindowY));
   const maxY = Math.floor(Math.min(numRows - 1, offsetY + halfWindowY));
 
-  const visibleTiles = [];
-  for (let y = minY; y <= maxY; y++) {
-    for (let x = minX; x <= maxX; x++) {
-      const key = mapKey(x, y)
-      visibleTiles.push(
-        <TileVisual
-          key={key}
-          data={map.tiles[key]}
-          x={x}
-          y={y}
-          selected={selected}
-          breakTimer={breakTimer}
-        />
-      );
+  const adjacentCache = useMemo(() => {
+    const cache = {};
+    for (let y = minY - 1; y <= maxY + 1; y++) {
+      for (let x = minX - 1; x <= maxX + 1; x++) {
+        const key = mapKey(x, y);
+        const adjacents = [];
+        const cardinals = direction.cardinal();
+        for (let i = 0; i < cardinals.length; i++) {
+          const d = cardinals[i];
+          const adjKey = mapKey(x + d.dx, y + d.dy);
+          adjacents.push({tile: map.tiles[adjKey], direction: d});
+        }
+        cache[key] = adjacents;
+      }
     }
-  }
+    return cache;
+  }, [minX, maxX, minY, maxY, map.tiles]);
+
+  const visibleTiles = useMemo(() => {
+    const tiles = [];
+    for (let y = minY; y <= maxY; y++) {
+      for (let x = minX; x <= maxX; x++) {
+        const key = mapKey(x, y);
+        tiles.push(
+          <TileVisual
+            key={key}
+            tileObj={map.tiles[key]}
+            x={x}
+            y={y}
+            selected={selected}
+            breakTimer={breakTimer}
+            adjacentTiles={adjacentCache[key]}
+          />
+        );
+      }
+    }
+    return tiles;
+  }, [minX, maxX, minY, maxY, map.tiles, selected, breakTimer, adjacentCache]);
 
   return (
     <Window className="map-window">
@@ -112,6 +147,7 @@ const MapWindow = ({ map,
         <Shadow />
         <PlayerGraphic
           $background={directionAsset(facing)}
+          $isMoving={isMoving}
         />
       </PlayerContainer>
       {

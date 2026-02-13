@@ -11,7 +11,8 @@ export const TileName = {
   GRASS: 'grass',
   STONE: 'stone',
   BARRIER: 'barrier',
-  TREE: 'tree'
+  TREE: 'tree',
+  HOLE: 'hole'
 }
 
 export class direction {
@@ -34,6 +35,15 @@ export class direction {
     if (d.dx < 0 && d.dy > 0) return direction.SW;
     if (d.dx > 0 && d.dy > 0) return direction.SE;
     return direction.S;
+  }
+
+  static cardinal() {
+    return [
+      direction.N,
+      direction.E,
+      direction.S,
+      direction.W
+    ]
   }
 }
 
@@ -73,7 +83,7 @@ export const KEY = {
   SOUTH: 'arrowdown',
   EAST: 'arrowright',
   WEST: 'arrowleft',
-  STILL: 'alt',
+  STILL: 's',
   STRAFE: 'shift',
   BREAK: 'c',
   INTERACT: 'x',
@@ -91,6 +101,6 @@ export const target_coord = (position, facing, target_distance) => {
   return { x: target_x, y: target_y }
 }
 
-export const MAX_TARGET_DISTANCE = 2;
+export const MAX_TARGET_DISTANCE = 1;
 
 export const BREAK_TIME = 300;

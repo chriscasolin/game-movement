@@ -1,6 +1,6 @@
 import styled from "styled-components"
 import { link, TILE_SIZE } from "./util"
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 
 const StyledTile = styled.div.attrs(({ $x, $y }) => ({
   style: {
@@ -14,6 +14,7 @@ const StyledTile = styled.div.attrs(({ $x, $y }) => ({
   border: none;
   background-image: ${({ $background }) => $background};
   background-size: cover;
+  will-change: background-image;
 `
 
 const SelectedIndicator = styled.div`
@@ -36,47 +37,56 @@ const buildClasses = (tileObj) => {
   return ["tile", tileObj.ground?.name, tileObj.object?.name].join(' ')
 }
 
-const buildBackground = (tileObj) => {
-  let sources = []
-
-  if (tileObj.object) {
-    sources.push(tileObj.object.texture)
-  }
-  if (tileObj.ground) {
-    sources.push(tileObj.ground.texture)
-  }
-
-  const ret = sources.map(s => link(s)).join(', ')
-  return ret
+const buildBackground = (tileObj, adjacentTiles) => {
+  return tileObj.textures(adjacentTiles).map(t => link(t)).join(', ')
 }
 
-const TileVisual = ({
-  data,
-  x,
-  y,
+// const TileVisual = ({
+const TileVisual = React.memo(({
+  tileObj,
   selected,
-  breakTimer
+  breakTimer,
+  adjacentTiles
 }) => {
   const [timer, setTimer] = useState(null);
+  const [background, setBackground] = useState(() => buildBackground(tileObj, adjacentTiles));
 
   useEffect(() => {
-    if (selected.x === x && selected.y === y && breakTimer) {
+    const newBackground = buildBackground(tileObj, adjacentTiles);
+    if (newBackground !== background) {
+      const textures = tileObj.textures(adjacentTiles);
+      const imagePromises = textures.map(texture => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.onload = resolve;
+          img.onerror = resolve;
+          img.src = `textures/${texture}`;
+        });
+      });
+      
+      Promise.all(imagePromises).then(() => {
+        setBackground(newBackground);
+      });
+    }
+  }, [tileObj, adjacentTiles, background]);
+
+  useEffect(() => {
+    if (selected.x === tileObj.x && selected.y === tileObj.y && breakTimer) {
       requestAnimationFrame(() => {
         setTimer(breakTimer);
       });
     } else {
       setTimer(null);
     }
-  }, [breakTimer, selected.x, selected.y]);
-
+  }, [breakTimer, selected.x, selected.y, tileObj.x, tileObj.y]);
 
   return <StyledTile
-    className={buildClasses(data)}
-    $background={buildBackground(data)}
-    $x={x}
-    $y={y}
+    className={buildClasses(tileObj)}
+    $background={background}
+    $x={tileObj.x}
+    $y={tileObj.y}
   >
-    {(selected.x === x && selected.y === y) &&
+    {(selected.x === tileObj.x && selected.y === tileObj.y) &&
       <SelectedIndicator>
         <BreakBar
           $breakTimer={timer}
@@ -84,7 +94,17 @@ const TileVisual = ({
       </SelectedIndicator>
     }
   </StyledTile>
-
-}
+// }
+}, (prevProps, nextProps) => {
+  if (prevProps.tileObj !== nextProps.tileObj) return false;
+  if (prevProps.breakTimer !== nextProps.breakTimer) return false;
+  if (prevProps.selected.x !== nextProps.selected.x || prevProps.selected.y !== nextProps.selected.y) return false;
+  
+  for (let i = 0; i < prevProps.adjacentTiles.length; i++) {
+    if (prevProps.adjacentTiles[i].tile !== nextProps.adjacentTiles[i].tile) return false;
+  }
+  
+  return true;
+});
 
 export default TileVisual

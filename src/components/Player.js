@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef } from "react";
 import { BREAK_TIME, direction, KEY, keyCode, mapKey, MAX_TARGET_DISTANCE, MOVEMENT_KEYS, SOLID_OBJECTS } from "./util";
 
-const MOVE_INTERVAL = 20;
+const MOVE_INTERVAL = 50;
 const MOVE_AMOUNT = 0.1;
 
 const Player = ({
   onPlayerUpdate,
-  onMapUpdate,
+  onTileUpdate,
   map,
   position,
   momentum,
@@ -16,17 +16,14 @@ const Player = ({
   selected
 }) => {
   const heldKeys = useRef(new Set());
-  const mapRef = useRef(map);
   const positionRef = useRef(position);
   const momentumRef = useRef(momentum);
+  const selectedRef = useRef(selected)
   const movementInterval = useRef(null);
   const breakTimeout = useRef(null);
-  const selectedRef = useRef(selected)
 
-  useEffect(() => { mapRef.current = map; }, [map]);
   useEffect(() => { positionRef.current = position; }, [position]);
   useEffect(() => { momentumRef.current = momentum; }, [momentum]);
-  // useEffect(() => { selectedRef.current = selected; }, [selected]);
 
   useEffect(() => {
     let d = 0;
@@ -41,9 +38,8 @@ const Player = ({
       }
       d++
     }
-    const tile = { x: Math.round(x + d * dx), y: Math.round(y + d * dy) }
-
-    selected = tile;
+    const offset = 0.2
+    const tile = { x: Math.round(x + (d - offset) * dx), y: Math.round(y + (d - offset) * dy) }
     onPlayerUpdate({ selected: tile })
   }, [position, facing, targetDistance, map])
 
@@ -57,6 +53,11 @@ const Player = ({
         startBreak();
       }
     }
+  }, [selected])
+
+  useEffect(() => {
+    console.log("Selected changed:", selected);
+    console.log("Held keys:", Array.from(heldKeys.current));
   }, [selected])
 
   const calculateMomentum = () => {
@@ -76,7 +77,7 @@ const Player = ({
   };
 
   const canGo = (key) => {
-    return !SOLID_OBJECTS.has(mapRef.current.tiles[key]?.object?.name)
+    return !SOLID_OBJECTS.has(map.tiles[key]?.object?.name)
   }
 
   const moveTo = (x, y) => {
@@ -111,18 +112,26 @@ const Player = ({
 
   const onMovementKeyDown = () => {
     const newMomentum = calculateMomentum();
-    onPlayerUpdate({ momentum: newMomentum });
-    clearInterval(movementInterval.current);
-    movementInterval.current = setInterval(() => {
+    onPlayerUpdate({ momentum: newMomentum, isMoving: true });
+    
+    if (movementInterval.current) {
+      cancelAnimationFrame(movementInterval.current);
+    }
+    
+    const animate = () => {
       if (!inventory.open) applyMovement(momentumRef.current);
-    }, MOVE_INTERVAL);
+      movementInterval.current = requestAnimationFrame(animate);
+    };
+    movementInterval.current = requestAnimationFrame(animate);
   };
 
   const onMovementKeyUp = () => {
     const newMomentum = calculateMomentum();
     onPlayerUpdate({ momentum: newMomentum });
     if (newMomentum.dx === 0 && newMomentum.dy === 0) {
-      clearInterval(movementInterval.current);
+      cancelAnimationFrame(movementInterval.current);
+      movementInterval.current = null;
+      onPlayerUpdate({ isMoving: false });
     }
   };
 
@@ -139,11 +148,10 @@ const Player = ({
 
   const breakTile = (tile) => {
     if (tile.object) {
-      delete tile.object
+      tile.object = null
     } else if (tile.ground) {
-      delete tile.ground
+      tile.has_hole = true
     }
-
     return tile
   }
 
@@ -153,7 +161,7 @@ const Player = ({
     breakTimeout.current = setTimeout(() => {
       let current = selectedRef.current
       let newTile = breakTile(map.tiles[mapKey(current.x, current.y)])
-      onMapUpdate({ [mapKey(current.x, current.y)]: newTile })
+      onTileUpdate({ [mapKey(current.x, current.y)]: newTile })
       onPlayerUpdate({ breakTimer: null })
 
       if (heldKeys.current.has(KEY.BREAK)) {
